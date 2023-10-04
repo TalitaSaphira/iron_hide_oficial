@@ -112,6 +112,12 @@ target_link_libraries(rota_node ${catkin_LIBRARIES})
 add_executable(movimentation_main_node src/sources/main.cpp)
 target_link_libraries(movimentation_main_node ${catkin_LIBRARIES})
 
+#green_corner_tracker_ROS.py
+#add_executable(green_finder_node scripts/green_corner_tracker_ROS.py)
+
+#horizontal_lines_ROS.py
+#add_executable(line_counter_node scripts/horizontal_lines_ROS.py)
+
 
 
 
