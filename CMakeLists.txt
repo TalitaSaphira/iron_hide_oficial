@@ -108,6 +108,10 @@ target_link_libraries(listener_node ${catkin_LIBRARIES})
 add_executable(rota_node src/sources/Aestrelapub.cpp)
 target_link_libraries(rota_node ${catkin_LIBRARIES})
 
+#main.cpp
+add_executable(movimentation_main_node src/sources/main.cpp)
+target_link_libraries(movimentation_main_node ${catkin_LIBRARIES})
+
 
 
 

@@ -19,7 +19,7 @@ rospy.init_node('green_finder_node')
 # Criar um publisher para a imagem processada
 image_pub = rospy.Publisher('processed_image_green', Image, queue_size=1)
 # Criar um publisher para o conteúdo do terminal
-terminal_pub = rospy.Publisher('greencorner', String, queue_size=1)
+terminal_pub = rospy.Publisher('greencorner', bool, queue_size=1)
 # Criar um objeto CvBridge para converter entre o formato OpenCV e o formato ROS
 bridge = CvBridge()
 
@@ -38,7 +38,10 @@ def green(img):
             cv.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
             cv.putText(img, "GOTCHA!", (10, 60), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
             #print("Achou o plano verde!")
-            terminal_content = "Achou o plano verde!"
+            terminal_content = True
+            terminal_pub.publish(terminal_content)
+        else: 
+            terminal_content = False
             terminal_pub.publish(terminal_content)
 
     # Converter a imagem OpenCV para uma mensagem ROS

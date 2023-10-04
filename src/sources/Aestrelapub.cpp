@@ -12,7 +12,7 @@
 #include <set>
 
 #include <ros/ros.h>
-#include <std_msgs/Int32MultiArray.h>
+#include <std_msgs/Float32MultiArray.h>
 
 using namespace std; 
 using namespace ros;
@@ -650,6 +650,7 @@ int aStarSearch(int grid[][COL], Pair src, Pair dest)
 
 // Driver program to test above function 
 vector<pair<int,int>> caminho(int xi, int yi, int xf, int yf) { 
+
 	/* Description of the Grid- 
 	1--> The cell is not blocked 
 	0--> The cell is blocked */
@@ -664,45 +665,92 @@ vector<pair<int,int>> caminho(int xi, int yi, int xf, int yf) {
 		{ 0, 1, 1, 1, 1, 1, 1 }
 	}; 
     Pair src = make_pair(xi, yi);
-
     Pair dest = make_pair(xf, yf); 
     resultado.clear();
+
     int a = aStarSearch(grid, src, dest);
     if(a == 1){
     	resultado.clear();
     }
+
 	return resultado;
 }
 
-int main(int argc, char **argv)
+float rob_pos[2];
+float rob_des[2];
+
+// Topic messages callback
+void RobotPositionCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
 {
-    //inicializando um objeto "rota"
-    init(argc, argv, "rota_node");
-    //A primeira coisa a se fazer é criar um NodeHandle
-    NodeHandle nh;
+	rob_pos[0] = msg->data[0];
+	rob_pos[1] = msg->data[1];
+    //ROS_INFO("Robot posision: (%f, %f)\n", msg->data[0], msg->data[1]);
+}
 
-    //advertise é o nome do método que permite criar um publisher
-    //n.advertise<message_type>("topic_name", queue_size);
-    Publisher rota_pub = nh.advertise<std_msgs::Int32MultiArray>("pnts_vetor", 1000);
+// Topic messages callback
+void RobotDestinationCallback(const std_msgs::Float32MultiArray::ConstPtr& msg)
+{
+	rob_des[0] = msg->data[0];
+	rob_des[1] = msg->data[1];
+    //ROS_INFO("Robot destination: (%f, %f)\n", msg->data[0], msg->data[1]);
+}
 
-    //frequencia de lançamento das mensagens
-    Rate loop_rate(0.1);
+//Publica o caminho que o robô terá que sequir
+int main(int argc, char **argv) {
 
-    int count = 0;
-    //enquanto o ROS Master estiver funcionando faça:
-    while (ok())
+	init(argc, argv, "calcula_rota_node");
+	NodeHandle nh;
+
+    Subscriber robot_position_sub = nh.subscribe("robot_position", 1000, RobotPositionCallback);
+    Subscriber robot_destination_sub = nh.subscribe("robot_destination", 1000, RobotDestinationCallback);
+
+    Publisher rota_pub = nh.advertise<std_msgs::Float32MultiArray>("pnts_vetor", 1000);
+
+    Rate loop_rate(0.5);
+
+	//ao invés de publicar sempre a mensage
+	// vamos publicar apenas uma vez (só quando o tópico for chamado)
+
+	// if(ok()){
+
+	// 	std_msgs::Float32MultiArray msg;
+
+	// 	std::vector<float> vec;
+
+	// 	vector<pair<int, int>> ret;
+	// 	ret = caminho(rob_pos[0], rob_pos[1], rob_des[0], rob_des[1]); //Manda um caminho arbitrário
+	// 	int tamanho = ret.size();
+	// 	for (int i = 0; i < tamanho; i++){
+	// 		vec.push_back(ret[i].first);
+	// 		vec.push_back(ret[i].second);
+	// 	}
+	// 	msg.data = vec;
+
+	// 	//ROS_INFO("Rota recebida");
+	// 	rota_pub.publish(msg);
+
+	// 	//manda a mensagem para o buffer
+	// 	spinOnce();
+	// 	loop_rate.sleep();
+	// }
+
+	int count = 0;
+
+	while (ok())
     {
-        std_msgs::Int32MultiArray msg;
+     std_msgs::Float32MultiArray msg;
+
+		std::vector<float> vec;
 
         vector<pair<int, int>> ret;
         ret = caminho(1, 1, 6, 6); //Manda um caminho arbitrário
-        int i = 0;
-        for (const auto& pair : ret){
-            msg.data[i] = pair.first;
-            msg.data[i+1]= pair.second;
-            i += 2;
-        }
-        
+        int tamanho = ret.size();
+        for (int i = 0; i < tamanho; i++){
+		  	vec.push_back(ret[i].first);
+         vec.push_back(ret[i].second);
+		}
+		msg.data = vec;
+
         //ROS_INFO("Rota recebida");
         rota_pub.publish(msg);
         //manda a mensagem para o buffer
@@ -710,6 +758,7 @@ int main(int argc, char **argv)
         loop_rate.sleep();
         count++;
     }
+	
     return 0;
 }
 
