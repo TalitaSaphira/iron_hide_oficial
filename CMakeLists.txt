@@ -92,6 +92,8 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 
+add_subdirectory(./src/motion)
+add_subdirectory(./src/odometry)
 
 #Publisher.py
 #add_executable(talker_node src/publisher.py)
