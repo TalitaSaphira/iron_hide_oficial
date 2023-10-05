@@ -70,13 +70,13 @@ void setup() {
   //  Serial.println("Não foi possível encontrar um ou mais encoders AS5600. Por favor, verifique suas conexões.");
   //  while (1);
   //}
-  pinMode(encoderLB, INPUT);
-  pinMode(encoderRB, INPUT);
-  pinMode(encoderLF, INPUT);
-  pinMode(encoderRF, INPUT);
+  // pinMode(encoderLB, INPUT);
+  // pinMode(encoderRB, INPUT);
+  // pinMode(encoderLF, INPUT);
+  // pinMode(encoderRF, INPUT);
 
   // Configuração de interrupção para detectar pulsos do encoder
-  attachInterrupt(digitalPinToInterrupt(encoderLB), contabilizarPulso, RISING);
+  // attachInterrupt(digitalPinToInterrupt(encoderLB), contabilizarPulso, RISING);
 
   //===Configura a informação dos drivers===
   // pinMode(ENABLE_PIN, OUTPUT);
